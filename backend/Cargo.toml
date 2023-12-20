@@ -1,5 +1,5 @@
 [package]
-name = "axum-testing-backend"
+name = "flaming-framework-backend"
 version = "0.1.0"
 edition = "2021"
 

@@ -1,4 +1,4 @@
-# This script was written by Jas Bertovic and is being used by FRC Team 1540 under the Mozilla Public License 2.0 (see SCRIPT_LICENSE)
+# This script was written by Jas Bertovic and FRC Team 1540, the parts written by the former are being used by FRC Team 1540 under the Mozilla Public License 2.0 (see SCRIPT_LICENSE.md)
 
 #!/usr/bin/env bash
 
@@ -10,25 +10,25 @@
 # see https://stackoverflow.com/questions/11583562/how-to-kill-a-process-running-on-particular-port-in-linux
 # kill $(lsof -t -i:8080) (add -9 for extra power)
 
-npm_output=$(mktemp)
+bun_output=$(mktemp)
 cargo_output=$(mktemp)
-npm_status=$(mktemp)
+bun_status=$(mktemp)
 cargo_status=$(mktemp)
 
 # run in background, capture outputs, error codes
-script -q -c "cd front_end && npm i && npm run build; echo \$? > $npm_status" /dev/null > $npm_output 2> $npm_output
-npm_pid=$!
+script -q -c "cd frontend && bun i && bun run build; echo \$? > $bun_status" /dev/null > $bun_output 2> $bun_output
+bun_pid=$!
 
 script -q -c "cargo build; echo \$? > $cargo_status" /dev/null > $cargo_output 2> $cargo_output
 cargo_pid=$!
 
-wait $npm_pid
-npm_exit_status=$(cat $npm_status)
+wait $bun_pid
+bun_exit_status=$(cat $bun_status)
 
 # log if something failed
-if [ $npm_exit_status -ne 0 ]; then
+if [ $bun_exit_status -ne 0 ]; then
     echo "Frontend build failed:"
-    cat $npm_output
+    cat $bun_output
 fi
 
 wait $cargo_pid
@@ -39,9 +39,9 @@ if [ $cargo_exit_status -ne 0 ]; then
     cat $cargo_output
 fi
 
-rm $npm_output
+rm $bun_output
 rm $cargo_output
 
-if [ $npm_exit_status -eq 0 ] && [ $cargo_exit_status -eq 0 ]; then
+if [ $bun_exit_status -eq 0 ] && [ $cargo_exit_status -eq 0 ]; then
     echo "Build success"
 fi
